@@ -1,0 +1,82 @@
+
+Sub FindStockStats()
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim maxIncrease As Double
+    Dim maxDecrease As Double
+    Dim maxVolume As Double
+    Dim maxIncreaseStock As String
+    Dim maxDecreaseStock As String
+    Dim maxVolumeStock As String
+    Dim statsSheet As Worksheet
+   
+    ' Set the statsSheet as the active sheet
+    Set statsSheet = ActiveSheet
+   
+    ' Initialize variables
+    maxIncrease = 0
+    maxDecrease = 0
+    maxVolume = 0
+   
+    ' Loop through all worksheets
+    For Each ws In ThisWorkbook.Worksheets
+        ' Find the last row in column K (Percent Change)
+        lastRow = ws.Cells(ws.Rows.Count, "K").End(xlUp).Row
+       
+        ' Loop through all rows in the worksheet
+        For i = 2 To lastRow ' Assuming the data starts from row 2
+           
+            ' Get the values from columns I, J, K, and L
+            Dim ticker As String
+            Dim yearlyChange As Double
+            Dim percentChange As Double
+            Dim totalVolume As Double
+           
+            ticker = ws.Cells(i, "I").Value
+            yearlyChange = ws.Cells(i, "J").Value
+            percentChange = ws.Cells(i, "K").Value
+            totalVolume = ws.Cells(i, "L").Value
+           
+            ' Check for greatest percent increase
+            If percentChange > maxIncrease Then
+                maxIncrease = percentChange
+                maxIncreaseStock = ticker
+            End If
+           
+            ' Check for greatest percent decrease
+            If percentChange < maxDecrease Then
+                maxDecrease = percentChange
+                maxDecreaseStock = ticker
+            End If
+           
+            ' Check for greatest total volume
+            If totalVolume > maxVolume Then
+                maxVolume = totalVolume
+                maxVolumeStock = ticker
+            End If
+        Next i
+    Next ws
+   
+    ' Output the results on the same worksheet
+    
+    statsSheet.Range("Q1").Value = "Ticker"
+    statsSheet.Range("R1").Value = "Value"
+    statsSheet.Range("P2").Value = "Greatest % increase"
+    statsSheet.Range("P3").Value = "Greatest % decrease"
+    statsSheet.Range("P4").Value = "Greatest total volume"
+    statsSheet.Range("Q2").Value = maxIncreaseStock
+    statsSheet.Range("Q3").Value = maxDecreaseStock
+    statsSheet.Range("Q4").Value = maxVolumeStock
+    statsSheet.Range("R2").Value = maxIncrease
+    statsSheet.Range("R3").Value = maxDecrease
+    statsSheet.Range("R4").Value = maxVolume
+   
+    ' Autofit the columns
+    statsSheet.Columns("P:R").AutoFit
+    
+    ' Reset the variables for the next iteration
+    maxIncrease = 0
+    maxdecrease = 0
+    maxVolume = 0
+   
+End Sub
